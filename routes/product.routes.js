@@ -5,34 +5,6 @@ const { productModel } = require('../model/product.modal')
 const productRoute = express.Router()
 
 
-productRoute.get('/get', async (req, res) => {
-    try {
-        let query = {};
-
-        if (req.query.title) {
-            query.title = { $regex: new RegExp(req.query.title, 'i') };
-        }
-
-        if (req.query.category) {
-            query.category = req.query.category;
-        }
-
-        let sortOptions = {};
-
-        if (req.query.sort) {
-            const sortField = req.query.sort.toLowerCase();
-            sortOptions[sortField] = Number(req.query.order); 
-        }
-
-        let products = await productModel.find(query).sort(sortOptions);
-
-        res.send({ "msg": "Product list fetch successfully", "success": true, products });
-    } catch (err) {
-        console.log(err);
-        res.send({ "msg": "Error fetching products", "success": false, err });
-    }
-});
-
 
 productRoute.get('/get/:_id', async (req, res) => {
     try {
@@ -47,6 +19,37 @@ productRoute.get('/get/:_id', async (req, res) => {
 
 
 productRoute.use(authenticate)
+
+productRoute.get('/get', async (req, res) => {
+    try {
+        let query = {};
+
+        let owner = req.userID
+        query.owner = owner;
+
+        if (req.query.title) {
+            query.title = { $regex: new RegExp(req.query.title, 'i') };
+        }
+
+        if (req.query.category) {
+            query.category = req.query.category;
+        }
+
+        let sortOptions = {};
+
+        if (req.query.sort) {
+            const sortField = req.query.sort.toLowerCase();
+            sortOptions[sortField] = Number(req.query.order);
+        }
+
+        let products = await productModel.find(query).sort(sortOptions);
+
+        res.send({ "msg": "Product list fetch successfully", "success": true, products });
+    } catch (err) {
+        console.log(err);
+        res.send({ "msg": "Error fetching products", "success": false, err });
+    }
+});
 
 productRoute.post("/create", async (req, res) => {
     try {
