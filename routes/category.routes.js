@@ -5,22 +5,7 @@ const { categoryModel } = require('../model/category.model');
 
 const categoryRoute = express.Router()
 
-categoryRoute.get('/get', async (req, res) => {
-    try {
 
-        let query = {};
-
-        if (req.query.name) {
-            query.name = { $regex: new RegExp(req.query.name, 'i') };
-        }
-
-        let categories = await categoryModel.find(query)
-        res.send({ "msg": "Categories list fetch successfully", "success": true, categories })
-    } catch (err) {
-        console.log(err);
-        res.send({ "msg": "Not found categories", "success": false, err })
-    }
-})
 
 categoryRoute.get('/get/:_id', async (req, res) => {
     try {
@@ -34,6 +19,26 @@ categoryRoute.get('/get/:_id', async (req, res) => {
 })
 
 categoryRoute.use(authenticate)
+
+categoryRoute.get('/get', async (req, res) => {
+    try {
+
+        let query = {};
+        
+        let owner = req.userID
+        query.owner = owner;
+
+        if (req.query.name) {
+            query.name = { $regex: new RegExp(req.query.name, 'i') };
+        }
+
+        let categories = await categoryModel.find(query)
+        res.send({ "msg": "Categories list fetch successfully", "success": true, categories })
+    } catch (err) {
+        console.log(err);
+        res.send({ "msg": "Not found categories", "success": false, err })
+    }
+})
 
 categoryRoute.post('/create', async (req, res) => {
     try {
