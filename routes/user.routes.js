@@ -77,8 +77,9 @@ userRoute.patch("/edit/:_id", async (req, res) => {
             payload.password = hashedPassword;
         }
 
-        await userModel.findByIdAndUpdate({ _id }, payload)
-        res.send({ "msg": "User data has been updated successfully", "success": true })
+        const updatedUser = await userModel.findByIdAndUpdate({ _id }, payload, { new: true });
+
+        res.send({ "msg": "User data has been updated successfully", "success": true, "data": updatedUser })
 
     } catch (err) {
         res.send({ "msg": "User has not been updated", "success": false, err })
