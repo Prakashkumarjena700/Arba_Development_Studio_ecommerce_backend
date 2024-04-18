@@ -36,12 +36,12 @@ userRoute.post("/register", async (req, res) => {
 })
 
 userRoute.post("/login", async (req, res) => {
-    const { email, password } = req.body
-    if (email == null || password == null) {
+    const { userName, password } = req.body
+    if (userName == null || password == null) {
         res.send({ "msg": "Please all the required fields", "success": false })
     } else {
         try {
-            const user = await userModel.find({ email })
+            const user = await userModel.find({ userName })
             if (user.length > 0) {
                 bcrypt.compare(password, user[0].password, (err, result) => {
                     if (result) {
