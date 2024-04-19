@@ -1,6 +1,8 @@
 const express = require('express')
 const { authenticate } = require('../middleware/auth.middleware')
 const { productModel } = require('../model/product.modal')
+const slugify = require('slugify');
+
 
 const productRoute = express.Router()
 
