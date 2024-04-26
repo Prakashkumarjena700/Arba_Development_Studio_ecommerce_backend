@@ -44,7 +44,7 @@ productRoute.get('/get', async (req, res) => {
             sortOptions[sortField] = Number(req.query.order);
         }
 
-        let products = await productModel.find(query).sort(sortOptions);
+        let products = await productModel.find(query).sort(sortOptions).populate('category');
 
         res.send({ "msg": "Product list fetch successfully", "success": true, products });
     } catch (err) {
