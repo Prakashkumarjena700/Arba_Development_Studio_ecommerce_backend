@@ -118,13 +118,11 @@ userRoute.post("/forgot-password", async (req, res) => {
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    res.send(error);
+                    return res.send(error);
                 } else {
-                    res.send({ 'msg': 'Mail has been sent', 'success': true, 'data': info.response });
+                    return res.send({ 'msg': 'Mail has been sent', 'success': true, 'data': info.response });
                 }
             });
-
-            res.send({ link })
         }
 
     } catch (err) {
