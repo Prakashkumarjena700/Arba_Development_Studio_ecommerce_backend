@@ -11,7 +11,6 @@
     
     <div>
         <input type="hidden" id="userId" value="<%= id %>">
-        <input type="hidden" id="authToken" value="<%= authToken %>">
         <input type="text" placeholder="Password" id="password">
         <input type="text" placeholder="Confirm Password" id="confPassword">
         <button onclick="UpdatePassword()">Submit</button>
@@ -22,7 +21,6 @@
         const password = document.getElementById('password').value
         const confpassword = document.getElementById('confPassword').value
         const userId = document.getElementById('userId').value;
-        const authToken = document.getElementById('authToken').value;
         if (password !== confpassword) {
             alert('Both password and confirm password should be same')
         } else {
@@ -31,9 +29,7 @@
                 method: "PATCH",
                 body: JSON.stringify({ password }),
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authToken
-                }
+                    'Content-Type': 'application/json'                }
             }).then(res => res.json())
                 .then(res => {
                     if (res.success) {

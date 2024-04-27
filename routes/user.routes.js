@@ -66,8 +66,8 @@ userRoute.post("/login", async (req, res) => {
     }
 })
 
-userRoute.get('/reset-password/:id/:token/:authToken', async (req, res) => {
-    const { id, token, authToken } = req.params
+userRoute.get('/reset-password/:id/:token', async (req, res) => {
+    const { id, token } = req.params
     const user = await userModel.findOne({ _id: id })
     if (!user) {
         return res.send({ 'msg': 'User not existing', success: false })
@@ -76,14 +76,63 @@ userRoute.get('/reset-password/:id/:token/:authToken', async (req, res) => {
     try {
         const verify = jwt.verify(token, secreate)
 
-        res.render("index", { id: user._id, authToken })
+        res.render("index", { id: user._id })
     } catch (err) {
         console.log(err);
         return res.send(err)
     }
 })
 
-userRoute.use(authenticate)
+userRoute.post("/forgot-password", async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            res.send({ 'msg': 'User not existing', success: false })
+        } else {
+            const secreate = 'arbaTokenSecreate123' + user.password;
+            const token = jwt.sign({ email: user.email, id: user._id }, secreate, { expiresIn: '10m' })
+            const link = `https://calm-tan-deer-wear.cyclic.app/users/reset-password/${user._id}/${token}`;
+
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'prakashkumarjena700@gmail.com',
+                    pass: 'ycze uofx ftxy eavq'
+                }
+            });
+            var mailOptions = {
+                from: 'prakashkumarjena700@gmail.com',
+                to: email,
+                subject: 'Reset Password for shopeZ',
+                html: `
+                    <h3><span style="color: #00AACF;">ShopeZ</span></h3>
+                    <p>Hello,</p>
+                    <p>You have requested to reset your password for shopeZ. Please click the link below to reset your password:</p>
+                    <a href="${link}">Reset Password</a>
+                    <p>This link will expire in 10 minutes.</p>
+                    <p>If you didn't request this, you can safely ignore this email.</p>
+                    <p>Best regards,<br/>shopeZ Team</p>
+                    `
+            };
+
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    res.send(error);
+                } else {
+                    res.send({ 'msg': 'Mail has been sent', 'success': true, 'data': info.response });
+                }
+            });
+
+            res.send({ link })
+        }
+
+    } catch (err) {
+        console.log(err);
+        res.send({ 'msg': 'mail has not sent', success: false, 'error': err })
+    }
+})
+
 
 userRoute.patch("/edit/:_id", async (req, res) => {
     try {
@@ -118,56 +167,7 @@ userRoute.delete("/delete/:_id", async (req, res) => {
     }
 })
 
-userRoute.post("/forgot-password", async (req, res) => {
-    const { email, authToken } = req.body;
-    try {
-        const user = await userModel.findOne({ email });
-        if (!user) {
-            res.send({ 'msg': 'User not existing', success: false })
-        } else {
-            const secreate = 'arbaTokenSecreate123' + user.password;
-            const token = jwt.sign({ email: user.email, id: user._id }, secreate, { expiresIn: '10m' })
-            const link = `https://calm-tan-deer-wear.cyclic.app/users/reset-password/${user._id}/${token}/${authToken}`;
 
-            var transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: 'prakashkumarjena700@gmail.com',
-                    pass: 'ycze uofx ftxy eavq'
-                }
-            });
-
-            var mailOptions = {
-                from: 'prakashkumarjena700@gmail.com',
-                to: email,
-                subject: 'Reset Password for shopeZ',
-                html: `
-                    <h3><span style="color: #00AACF;">ShopeZ</span></h3>
-                    <p>Hello,</p>
-                    <p>You have requested to reset your password for shopeZ. Please click the link below to reset your password:</p>
-                    <a href="${link}">Reset Password</a>
-                    <p>This link will expire in 10 minutes.</p>
-                    <p>If you didn't request this, you can safely ignore this email.</p>
-                    <p>Best regards,<br/>shopeZ Team</p>
-                    `
-            };
-
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    res.send(error);
-                } else {
-                    res.send({ 'msg': 'Mail has been sent', 'success': true, 'data': info.response });
-                }
-            });
-
-            res.send({ link })
-        }
-
-    } catch (err) {
-        console.log(err);
-        res.send({ 'msg': 'mail has not sent', success: false, 'error': err })
-    }
-})
 
 
 
