@@ -6,22 +6,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopeZ</title>
 </head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .input-container {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+    }
+
+    input {
+        width: 100%;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid #00bcd4;
+
+    }
+
+    input[type="password"]:focus {
+        border-color: #00bcd4;
+    }
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #00bcd4;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #007a8a;
+    }
+
+    .submit-btn {
+        width: 100%;
+        font-weight: bold;
+    }
+
+    h1 {
+        text-align: center;
+        color: #00bcd4;
+        margin-top: 100px;
+    }
+    .resetPass{
+        color: #00bcd4;
+    }
+</style>
 
 <body>
-    
-    <div>
-        <input type="hidden" id="userId" value="<%= id %>">
-        <input type="text" placeholder="Password" id="password">
-        <input type="text" placeholder="Confirm Password" id="confPassword">
-        <button onclick="UpdatePassword()">Submit</button>
+    <h1>ShopeZ</h1>
+    <div class="container">
+        <p class="resetPass" >Reset Password</p>
+        <div class="input-container">
+            <input type="hidden" id="userId" value="<%= id %>">
+            <input type="password" placeholder="Password" id="password">
+            <button onclick="togglePassword()" id="showPasswordBtn">Show</button>
+        </div>
+        <div class="input-container">
+            <input type="password" placeholder="Confirm Password" id="confPassword">
+            <button id="showCongPassBtn" onclick="toggleCongPass()">Show</button>
+        </div>
+        <button class="submit-btn" onclick="UpdatePassword()">Submit</button>
+        <a style="color: #00bcd4;text-align: center; display: block;margin-top: 20px;" href="https://arba-development-studio-ecommerce.vercel.app/">Go back to home</a>
     </div>
 </body>
 <script>
+    const togglePassword = () => {
+        const password = document.getElementById('password')
+        const showPasswordBtn = document.getElementById('showPasswordBtn')
+        if (password.type === 'password') {
+            password.type = 'text';
+            showPasswordBtn.innerHTML = 'Hide';
+        } else {
+            password.type = 'password';
+            showPasswordBtn.innerHTML = 'Show';
+        }
+    }
+
+    const toggleCongPass = () => {
+        const password = document.getElementById('confPassword')
+        const showPasswordBtn = document.getElementById('showCongPassBtn')
+        if (password.type === 'password') {
+            password.type = 'text';
+            showPasswordBtn.innerHTML = 'Hide';
+        } else {
+            password.type = 'password';
+            showPasswordBtn.innerHTML = 'Show';
+        }
+    }
+
+
     const UpdatePassword = async () => {
         const password = document.getElementById('password').value
         const confpassword = document.getElementById('confPassword').value
         const userId = document.getElementById('userId').value;
-        if (password !== confpassword) {
+        if (password == '' || confpassword == '') {
+            alert("Please fill both the fields")
+        }else if (password !== confpassword) {
             alert('Both password and confirm password should be same')
         } else {
 
@@ -29,7 +123,8 @@
                 method: "PATCH",
                 body: JSON.stringify({ password }),
                 headers: {
-                    'Content-Type': 'application/json'                }
+                    'Content-Type': 'application/json'
+                }
             }).then(res => res.json())
                 .then(res => {
                     if (res.success) {
