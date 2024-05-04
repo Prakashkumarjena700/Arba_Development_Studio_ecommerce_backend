@@ -22,14 +22,12 @@ categoryRoute.use(authenticate)
 
 categoryRoute.get('/get', async (req, res) => {
     try {
-
         let query = {};
-        
         let owner = req.userID
         query.owner = owner;
 
         if (req.query.name) {
-            query.name = { $regex: new RegExp(req.query.name, 'i') };
+            query.name = req.query.name
         }
 
         let categories = await categoryModel.find(query)
