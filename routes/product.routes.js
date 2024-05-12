@@ -69,6 +69,7 @@ productRoute.post("/create", async (req, res) => {
     }
 })
 
+
 productRoute.patch('/edit/:_id', async (req, res) => {
     try {
         let _id = req.params._id
