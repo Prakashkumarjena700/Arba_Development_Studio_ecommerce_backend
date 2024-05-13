@@ -92,7 +92,7 @@ userRoute.post("/forgot-password", async (req, res) => {
         } else {
             const secreate = 'arbaTokenSecreate123' + user.password;
             const token = jwt.sign({ email: user.email, id: user._id }, secreate, { expiresIn: '10m' })
-            const link = `https://real-ruby-caterpillar-tutu.cyclic.app/users/reset-password/${user._id}/${token}`;
+            const link = `https://arba-development-studio-ecommerce.onrender.com/users/reset-password/${user._id}/${token}`;
 
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
